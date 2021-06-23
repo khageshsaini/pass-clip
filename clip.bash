@@ -26,7 +26,6 @@
 #   This version is.
 
 PASSWORD_STORE_DIR="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
-USERNAME=$(whoami)
 
 cmd_clip_usage() {
     cat <<-_EOF
@@ -77,7 +76,7 @@ cmd_clip() {
     # Select a passfile
     passfile=$(find -L "$PASSWORD_STORE_DIR" -path '*/.git' -prune -o -iname '*.gpg' -print \
         | sed -e 's/.gpg$//' \
-	| sed -e 's/\/Users\/'$USERNAME'\/.password-store\///' \
+	| sed -e "s;$PASSWORD_STORE_DIR;;" \
         | sort \
         | eval "$menu" )
 
@@ -86,7 +85,7 @@ cmd_clip() {
     fi
     
     # Either copy existing one or generate a new one
-    if ls "$passfile.gpg" > /dev/null 2>&1; then
+    if ls "$PASSWORD_STORE_DIR$passfile.gpg" > /dev/null 2>&1; then
         cmd_show "$passfile" --clip || exit 1
     fi
 }
